@@ -13,6 +13,8 @@ let canGoNextPage = true;
 let pageCount = 0;
 let currentPageIndex = -1;
 let pages = [];
+let music_json = null;
+let expSetId = -1;
 
 function showElement(elem) {
     elem.style.display = "block";
@@ -47,22 +49,35 @@ function getNextButton() {
 }
 
 function setup(){
+    getJson();
     window.addEventListener('DOMContentLoaded', (event) => {
         pages = document.getElementsByClassName("page");
-        console.log(pages);
         pageCount = pages.length;
-        console.log(pageCount);
         for (let i = 0; i < pages.length; i++) {
-            console.log(pages[i]);
             pages[i].style = "display: none;";
             pages[i].appendChild(getNextButton());
         }
-        showElement(pages[0]);
-
         currentPageIndex = 0;
+        showElement(pages[currentPageIndex]);
+
     });
 }
 
+function getJson() {
+    fetch("musics.json")
+        .then(response => response.json())
+        .then(response => load_json(response));
+}
+
+async function load_json(data) {
+    expSetId = Math.trunc(Math.random() * 2);
+    music_json = data[expSetId];
+}
+
+function play() {
+    let audio = document.getElementById("bgm1");
+    audio.play();
+}
 
 function main() {
     setup();
