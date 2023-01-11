@@ -61,10 +61,17 @@
             <p>次に，2つの楽曲のうち，どちらが楽曲として自然に聴こえたかを回答してください．好みではなく，楽曲として自然な方(不自然さが少ない方)を回答してください．</p>
         </div>
 
-        <div class="page">
-            <button id="btn-play" type="button" onclick="play();">再生</button>
+        <div class="page naturalness">
+            <button id="btn-play" type="button" onclick="play(this);">
+                <audio id="naturalness-1a" preload>
+                    <source src="musics/test_sound.wav" type="audio/wav">
+                </audio>
+                Aを再生
+            </button>
+
+            <button id="btn-play" type="button" onclick="play(this);">Bを再生</button>
             <audio id="bgm1" preload>
-                <source src="musics/ex2_sawada_HP.wav" type="audio/wav">
+                <source src="musics/test_sound.wav" type="audio/wav">
             </audio>
         </div>
 

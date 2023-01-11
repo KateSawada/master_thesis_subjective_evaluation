@@ -57,7 +57,7 @@ function setup(){
             pages[i].style = "display: none;";
             pages[i].appendChild(getNextButton());
         }
-        currentPageIndex = 0;
+        currentPageIndex = 3;
         showElement(pages[currentPageIndex]);
 
     });
@@ -74,7 +74,8 @@ async function load_json(data) {
     music_json = data[expSetId];
 }
 
-function play() {
+function play(btn) {
+    console.log(btn);
     let audio = document.getElementById("bgm1");
     audio.play();
 }
