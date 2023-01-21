@@ -49,7 +49,8 @@ function getNextButton() {
 }
 
 function setup(){
-    getJson("musics.json");
+    expSetId = Math.trunc(Math.random() * 2);
+    music_json = getJson("musics.json")[expSetId];
     window.addEventListener('DOMContentLoaded', (event) => {
         pages = document.getElementsByClassName("page");
         pageCount = pages.length;
@@ -64,14 +65,15 @@ function setup(){
 }
 
 function getJson(filename) {
-    fetch(filename)
-        .then(response => response.json())
-        .then(response => load_json(response));
-}
-
-async function load_json(data) {
-    expSetId = Math.trunc(Math.random() * 2);
-    music_json = data[expSetId];
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", filename, false);
+    xhr.send(null);
+    // fetch(filename)
+    //     .then(response => response.json())
+    //     .then(response => load_json(response));
+    // return xhr.responseText;
+    json = JSON.parse(xhr.responseText);
+    return json;
 }
 
 function play(btn) {
