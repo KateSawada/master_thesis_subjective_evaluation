@@ -85,12 +85,12 @@ function main() {
 }
 
 // invalid enter key
-function invalid_enter() {
-    if (window.event.keyCode == 13) {
+window.document.onkeydown = function (evt) {
+    const keyCode = evt.code;
+    if (keyCode == "Enter"){
         return false;
     }
 }
-document.onkeypress = invalid_enter();
 
 
 main();
