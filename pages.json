@@ -56,10 +56,27 @@
     {
         "type": "similarity",
         "header": "類似楽曲の評価",
-        "x": "path/to/x",
-        "a": "path/to/a",
-        "b": "path/to/b",
-        "TODO: ": "ここのあたりをシャッフルして生成するプログラム書きたい"
+        "question_id": 0
+    },
+    {
+        "type": "similarity",
+        "header": "類似楽曲の評価",
+        "question_id": 1
+    },
+    {
+        "type": "similarity",
+        "header": "類似楽曲の評価",
+        "question_id": 2
+    },
+    {
+        "type": "similarity",
+        "header": "類似楽曲の評価",
+        "question_id": 3
+    },
+    {
+        "type": "similarity",
+        "header": "類似楽曲の評価",
+        "question_id": 4
     }
 
 
