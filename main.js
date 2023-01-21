@@ -49,7 +49,7 @@ function getNextButton() {
 }
 
 function setup(){
-    getJson();
+    getJson("musics.json");
     window.addEventListener('DOMContentLoaded', (event) => {
         pages = document.getElementsByClassName("page");
         pageCount = pages.length;
@@ -63,8 +63,8 @@ function setup(){
     });
 }
 
-function getJson() {
-    fetch("musics.json")
+function getJson(filename) {
+    fetch(filename)
         .then(response => response.json())
         .then(response => load_json(response));
 }
