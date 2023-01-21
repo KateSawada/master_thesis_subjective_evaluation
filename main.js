@@ -1,7 +1,7 @@
 /**
  * TODO: 送信前にemptyの回答がないかチェック
- * TODO: 前のページに戻った時のコンテンツ表示
  * TODO: 回答済の場合の回答を表示
+ * TODO: 未回答の場合に次ページに進ませない
  * TODO: 品質評価
  * TODO: 類似度評価
  */
@@ -54,7 +54,9 @@ function onStartButtonClick() {
 }
 
 function onPrevButtonClick() {
-
+    evaluation();
+    currentPageIndex -= 1;
+    contentRefresh();
 }
 
 function onNextButtonClick() {
