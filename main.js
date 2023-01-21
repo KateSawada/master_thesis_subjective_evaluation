@@ -13,7 +13,7 @@ let canGoNextPage = true;
 let pageCount = 0;
 let currentPageIndex = -1;
 let pages = [];
-let music_json = null;
+let musicJson = null;
 let expSetId = -1;
 
 function showElement(elem) {
@@ -50,7 +50,7 @@ function getNextButton() {
 
 function setup(){
     expSetId = Math.trunc(Math.random() * 2);
-    music_json = getJson("musics.json")[expSetId];
+    musicJson = getJson("musics.json")[expSetId];
     window.addEventListener('DOMContentLoaded', (event) => {
         pages = document.getElementsByClassName("page");
         pageCount = pages.length;
