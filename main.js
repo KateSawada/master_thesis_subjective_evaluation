@@ -1,12 +1,7 @@
 /**
- * [x]「次へ」　を押すと現在の .page を非表示にして，次の .page を表示
- * * 最初に全ての .page を配列で取得 -> 現在のindexを保持 -> 一個ずつずらしていく
- *
- * [x] 最後は .page ではなく， #final-page に飛ばす
- *
- * [x] 全ての .page の表示時に 「次へ」を表示
- *
- * [ ] canGoNextPage の処理
+ * TODO: 送信前にemptyの回答がないかチェック
+ * TODO: 品質評価
+ * TODO: 類似度評価
  */
 
 let canGoNextPage = true;
