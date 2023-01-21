@@ -9,7 +9,7 @@ let pageCount = 0;
 let currentPageIndex = -1;
 let pages = [];
 let musicJson = null;
-let questionJson = null;
+let pageJson = null;
 let expSetId = -1;
 let expContentDiv = null;
 let answers = [];
@@ -25,13 +25,13 @@ function hideElement(elem) {
 function evaluation() {
     inputs = document.getElementsByName("answer-input");
     if (inputs.length > 0) {
-        if (questionJson[currentPageIndex - 1].type == "yes-no") {
+        if (pageJson[currentPageIndex - 1].type == "yes-no") {
             for (let i = 0; i < inputs.length; i++) {
                 if (inputs[i].checked) {
                     answers[currentPageIndex - 1] = inputs[i].value;  // - 1: start-page の分
                 }
             }
-        } else if (questionJson[currentPageIndex - 1].type == "text") {
+        } else if (pageJson[currentPageIndex - 1].type == "text") {
             answers[currentPageIndex - 1] = inputs[0].value;
         }
     }
@@ -42,6 +42,10 @@ function onStartButtonClick() {
     document.getElementById('start-page').style.display ="none";
     document.getElementById("exp-page").style.display = "block";
     onNextButtonClick();
+}
+
+function onPrevButtonClick() {
+
 }
 
 function onNextButtonClick() {
@@ -64,20 +68,20 @@ function onNextButtonClick() {
 }
 
 function contentRefresh() {
-    if (currentPageIndex > 0 && currentPageIndex <= questionJson.length){
+    if (currentPageIndex > 0 && currentPageIndex <= pageJson.length){
         // pre-question
         while( expContentDiv.firstChild ){
             expContentDiv.removeChild( expContentDiv.firstChild );
         }
         let header = document.createElement("h1");
-        header.innerText = "音楽経験などに関するアンケート";
+        header.innerText = pageJson[currentPageIndex - 1].header;
         expContentDiv.appendChild(header);
 
         let questionText = document.createElement("h2");
-        questionText.innerText = questionJson[currentPageIndex - 1].question;
+        questionText.innerText = pageJson[currentPageIndex - 1].text;
         expContentDiv.appendChild(questionText);
 
-        if (questionJson[currentPageIndex - 1].type == "yes-no") {
+        if (pageJson[currentPageIndex - 1].type == "yes-no") {
             let displayText = ["はい", "いいえ"];
             let answerInput = [];
             for (let i = 0; i < displayText.length; i++) {
@@ -92,11 +96,12 @@ function contentRefresh() {
                 expContentDiv.appendChild(labelElement);
                 expContentDiv.appendChild(document.createElement("br"));
             }
-        } else if (questionJson[currentPageIndex - 1].type == "text") {
+        } else if (pageJson[currentPageIndex - 1].type == "text") {
             let textInput = document.createElement("input");
             textInput.type = "text";
             textInput.name = "answer-input";
             expContentDiv.appendChild(textInput);
+            expContentDiv.appendChild(document.createElement("br"));
         }
     } else if (false) { // TODO: 楽曲品質テスト
 
@@ -104,10 +109,13 @@ function contentRefresh() {
 
     }
 
-    if (false) {
+    if (currentPageIndex > 1) {
         // 最初のページ以外では「前へ」ボタン
-    } else if (false) {
+        expContentDiv.appendChild(getPrevButton());
+    }
+    if (currentPageIndex < pageJson.length + musicJson.naturalness.length + musicJson.similarity.length) {
         // 最後のページ以外では「次へ」ボタン
+        expContentDiv.appendChild(getNextButton());
     }
 }
 
@@ -118,10 +126,17 @@ function getNextButton() {
     return btn;
 }
 
+function getPrevButton() {
+    let btn = document.createElement('button');
+    btn.onclick = onPrevButtonClick;
+    btn.innerText = "前へ";
+    return btn;
+}
+
 function setup(){
     expSetId = Math.trunc(Math.random() * 2);
     musicJson = getJson("musics.json")[expSetId];
-    questionJson = getJson("pre_questions.json");
+    pageJson = getJson("pages.json");
     window.addEventListener('DOMContentLoaded', (event) => {
         expContentDiv = document.getElementById("exp-content");
         pages = document.getElementsByClassName("page");
