@@ -84,5 +84,13 @@ function main() {
     setup();
 }
 
+// invalid enter key
+function invalid_enter() {
+    if (window.event.keyCode == 13) {
+        return false;
+    }
+}
+document.onkeypress = invalid_enter();
+
 
 main();
