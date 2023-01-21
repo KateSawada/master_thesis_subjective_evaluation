@@ -1,5 +1,7 @@
 /**
  * TODO: 送信前にemptyの回答がないかチェック
+ * TODO: 前のページに戻った時のコンテンツ表示
+ * TODO: 回答済の場合の回答を表示
  * TODO: 品質評価
  * TODO: 類似度評価
  */
@@ -11,8 +13,13 @@ let pages = [];
 let musicJson = null;
 let pageJson = null;
 let expSetId = -1;
+let expTitleDiv = null;
 let expContentDiv = null;
 let answers = [];
+
+// pages.json properties
+let hasText = ["text", "yes-no", "introduction"];
+let hasQuestion = ["text", "yes-no"];
 
 function showElement(elem) {
     elem.style.display = "block";
@@ -25,15 +32,17 @@ function hideElement(elem) {
 function evaluation() {
     inputs = document.getElementsByName("answer-input");
     if (inputs.length > 0) {
-        if (pageJson[currentPageIndex - 1].type == "yes-no") {
+        if (pageJson[currentPageIndex].type == "yes-no") {
             for (let i = 0; i < inputs.length; i++) {
                 if (inputs[i].checked) {
-                    answers[currentPageIndex - 1] = inputs[i].value;  // - 1: start-page の分
+                    answers[currentPageIndex] = inputs[i].value;  // - 1: start-page の分
                 }
             }
-        } else if (pageJson[currentPageIndex - 1].type == "text") {
-            answers[currentPageIndex - 1] = inputs[0].value;
+        } else if (pageJson[currentPageIndex].type == "text") {
+            answers[currentPageIndex] = inputs[0].value;
         }
+    } else {
+        answers[currentPageIndex] = "";
     }
     console.log(answers);
 }
@@ -68,52 +77,54 @@ function onNextButtonClick() {
 }
 
 function contentRefresh() {
-    if (currentPageIndex > 0 && currentPageIndex <= pageJson.length){
-        // pre-question
-        while( expContentDiv.firstChild ){
-            expContentDiv.removeChild( expContentDiv.firstChild );
-        }
-        let header = document.createElement("h1");
-        header.innerText = pageJson[currentPageIndex - 1].header;
-        expContentDiv.appendChild(header);
-
-        let questionText = document.createElement("h2");
-        questionText.innerText = pageJson[currentPageIndex - 1].text;
-        expContentDiv.appendChild(questionText);
-
-        if (pageJson[currentPageIndex - 1].type == "yes-no") {
-            let displayText = ["はい", "いいえ"];
-            let answerInput = [];
-            for (let i = 0; i < displayText.length; i++) {
-                answerInput.push(document.createElement("input"));
-                answerInput[i].type = "radio";
-                answerInput[i].name = "answer-input";
-                answerInput[i].value = i;
-                // answerInput[i].onclick = evaluation;  // 動かん
-                let labelElement = document.createElement("label");
-                labelElement.appendChild(answerInput[i]);
-                labelElement.innerHTML += displayText[i];
-                expContentDiv.appendChild(labelElement);
-                expContentDiv.appendChild(document.createElement("br"));
-            }
-        } else if (pageJson[currentPageIndex - 1].type == "text") {
-            let textInput = document.createElement("input");
-            textInput.type = "text";
-            textInput.name = "answer-input";
-            expContentDiv.appendChild(textInput);
-            expContentDiv.appendChild(document.createElement("br"));
-        }
-    } else if (false) { // TODO: 楽曲品質テスト
-
-    } else if (false) { // TODO: 類似度テスト
-
+    while( expContentDiv.firstChild ){
+        expContentDiv.removeChild( expContentDiv.firstChild );
     }
 
-    if (currentPageIndex > 1) {
+    // ヘッダー更新
+    expTitleDiv.innerText = pageJson[currentPageIndex].header;
+
+    if (hasText.indexOf(pageJson[currentPageIndex].type) != -1) {
+        let questionText = document.createElement("div");
+        for (let i = 0; i < pageJson[currentPageIndex].text.length; i++) {
+            let textLine = document.createElement("p");
+            textLine.innerHTML = pageJson[currentPageIndex].text[i];
+            questionText.appendChild(textLine);
+        }
+        expContentDiv.appendChild(questionText);
+    }
+
+    if (pageJson[currentPageIndex].type == "yes-no") {
+        let displayText = ["はい", "いいえ"];
+        let answerInput = [];
+        for (let i = 0; i < displayText.length; i++) {
+            answerInput.push(document.createElement("input"));
+            answerInput[i].type = "radio";
+            answerInput[i].name = "answer-input";
+            answerInput[i].value = i;
+            // answerInput[i].onclick = evaluation;  // 動かん
+            let labelElement = document.createElement("label");
+            labelElement.appendChild(answerInput[i]);
+            labelElement.innerHTML += displayText[i];
+            expContentDiv.appendChild(labelElement);
+            expContentDiv.appendChild(document.createElement("br"));
+        }
+    } else if (pageJson[currentPageIndex].type == "text") {
+        let textInput = document.createElement("input");
+        textInput.type = "text";
+        textInput.name = "answer-input";
+        expContentDiv.appendChild(textInput);
+        expContentDiv.appendChild(document.createElement("br"));
+    } else if (pageJson[currentPageIndex].type == "similarity") {
+        // TODO: 実装
+    }
+
+
+    if (currentPageIndex > 0) {
         // 最初のページ以外では「前へ」ボタン
         expContentDiv.appendChild(getPrevButton());
     }
-    if (currentPageIndex < pageJson.length + musicJson.naturalness.length + musicJson.similarity.length) {
+    if (currentPageIndex < pageJson.length - 1) {
         // 最後のページ以外では「次へ」ボタン
         expContentDiv.appendChild(getNextButton());
     }
@@ -138,6 +149,7 @@ function setup(){
     musicJson = getJson("musics.json")[expSetId];
     pageJson = getJson("pages.json");
     window.addEventListener('DOMContentLoaded', (event) => {
+        expTitleDiv = document.getElementById("exp-page-title");
         expContentDiv = document.getElementById("exp-content");
         pages = document.getElementsByClassName("page");
         pageCount = pages.length;
@@ -146,7 +158,7 @@ function setup(){
             pages[i].appendChild(getNextButton());
         }
         currentPageIndex = 0;
-        showElement(pages[currentPageIndex]);
+        contentRefresh();
 
     });
 }
