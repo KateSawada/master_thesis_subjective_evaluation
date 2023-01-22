@@ -17,9 +17,12 @@ let expTitleDiv = null;
 let expContentDiv = null;
 let answers = [];
 
+const spreadSheetUrl = "https://script.google.com/macros/s/AKfycbzXsnLtz_bAxw8LrBuo6FnJ1X3r_1Rer1Hk4FG4cK7thyG0usCpgK7mJ1enHWr5ltg4wg/exec"
+
 // pages.json properties
 let hasText = ["text", "yes-no", "introduction"];
 let hasQuestion = ["text", "yes-no"];
+let isRadio = ["yes-no", "similarity"];
 
 function showElement(elem) {
     elem.style.display = "block";
@@ -32,7 +35,7 @@ function hideElement(elem) {
 function evaluation() {
     inputs = document.getElementsByName("answer-input");
     if (inputs.length > 0) {
-        if (pageJson[currentPageIndex].type == "yes-no") {
+        if (isRadio.indexOf(pageJson[currentPageIndex].type) != -1) {
             for (let i = 0; i < inputs.length; i++) {
                 if (inputs[i].checked) {
                     answers[currentPageIndex] = inputs[i].value;  // - 1: start-page の分
