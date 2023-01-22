@@ -77,7 +77,13 @@
         "type": "similarity",
         "header": "類似楽曲の評価",
         "question_id": 4
+    },
+    {
+        "type": "introduction",
+        "header": "",
+        "text": [
+            "これで実験は終了です．ご協力ありがとうございました．",
+            "「回答を送信」を押してください．"
+        ]
     }
-
-
 ]

@@ -59,6 +59,17 @@ function onPrevButtonClick() {
     contentRefresh();
 }
 
+function onFinishButtonClick() {
+    sendData().then(res => {
+        clearExpContentDiv();
+        alert("回答が送信されました．タブを閉じて終了してください．");
+    })
+}
+
+async function sendData(){
+    // TODO: 実装
+}
+
 function getPlayButton(filepath, text) {
     let audioSource = document.createElement("source");
     audioSource.src = filepath;
@@ -98,10 +109,14 @@ function onNextButtonClick() {
     console.log("currentPageIndex(after): " + currentPageIndex);
 }
 
-function contentRefresh() {
+function clearExpContentDiv(){
     while( expContentDiv.firstChild ){
         expContentDiv.removeChild( expContentDiv.firstChild );
     }
+}
+
+function contentRefresh() {
+    clearExpContentDiv();
 
     // ヘッダー更新
     expTitleDiv.innerText = pageJson[currentPageIndex].header;
@@ -174,6 +189,11 @@ function contentRefresh() {
     if (currentPageIndex < pageJson.length - 1) {
         // 最後のページ以外では「次へ」ボタン
         expContentDiv.appendChild(getNextButton());
+    } else if (currentPageIndex == pageJson.length - 1) {
+        let btn = document.createElement('button');
+        btn.onclick = onFinishButtonClick;
+        btn.innerText = "回答を送信";
+        expContentDiv.appendChild(btn);
     }
 }
 
