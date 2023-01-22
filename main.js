@@ -17,7 +17,7 @@ let expTitleDiv = null;
 let expContentDiv = null;
 let answers = [];
 
-const spreadSheetUrl = "https://script.google.com/macros/s/AKfycbzXsnLtz_bAxw8LrBuo6FnJ1X3r_1Rer1Hk4FG4cK7thyG0usCpgK7mJ1enHWr5ltg4wg/exec"
+const spreadSheetUrl = "https://script.google.com/macros/s/AKfycbyVSDp8l-0WQDgAeSsAI6ni5p7EgUh0vETlV-DOAbcPF0Q-Xzk64ZU5p0ErqgcOwKrEGA/exec"
 
 // pages.json properties
 let hasText = ["text", "yes-no", "introduction"];
@@ -38,14 +38,14 @@ function evaluation() {
         if (isRadio.indexOf(pageJson[currentPageIndex].type) != -1) {
             for (let i = 0; i < inputs.length; i++) {
                 if (inputs[i].checked) {
-                    answers[currentPageIndex] = inputs[i].value;  // - 1: start-page の分
+                    answers[currentPageIndex] = inputs[i].value;
                 }
             }
         } else if (pageJson[currentPageIndex].type == "text") {
             answers[currentPageIndex] = inputs[0].value;
         }
     } else {
-        answers[currentPageIndex] = "";
+        answers[currentPageIndex] = "## INTRODUCTION ##";
     }
     console.log(answers);
 }
@@ -65,12 +65,38 @@ function onPrevButtonClick() {
 function onFinishButtonClick() {
     sendData().then(res => {
         clearExpContentDiv();
-        alert("回答が送信されました．タブを閉じて終了してください．");
+        let msg = "回答が送信されました．タブを閉じて終了してください．";
+        alert(msg);
+        expContentDiv.innerText = msg;
     })
 }
 
+const formatDate = (current_datetime)=>{
+    let formatted_date = current_datetime.getFullYear() + "-" + (current_datetime.getMonth() + 1) + "-" + current_datetime.getDate() + " " + current_datetime.getHours() + ":" + current_datetime.getMinutes() + ":" + current_datetime.getSeconds();
+    return formatted_date;
+}
+
 async function sendData(){
-    // TODO: 実装
+    let timestamp = new Date();
+    timestamp = formatDate(timestamp);
+    let dataBody = {
+        "dataType" : "saveData",
+        "dataBody": {
+            "answers": answers,
+            "expSetId": expSetId,
+            "sendDate": timestamp
+        }
+    };
+
+    let postParam =
+    {
+        "method"     : "POST",
+        "mode"       : "no-cors",
+        "Content-Type" : "application/x-www-form-urlencoded",
+        "body" : JSON.stringify(dataBody)
+    };
+
+    fetch(spreadSheetUrl, postParam);
 }
 
 function getPlayButton(filepath, text) {

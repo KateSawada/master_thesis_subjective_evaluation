@@ -64,21 +64,6 @@
         "question_id": 1
     },
     {
-        "type": "similarity",
-        "header": "類似楽曲の評価",
-        "question_id": 2
-    },
-    {
-        "type": "similarity",
-        "header": "類似楽曲の評価",
-        "question_id": 3
-    },
-    {
-        "type": "similarity",
-        "header": "類似楽曲の評価",
-        "question_id": 4
-    },
-    {
         "type": "introduction",
         "header": "",
         "text": [
