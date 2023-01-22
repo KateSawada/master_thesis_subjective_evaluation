@@ -336,7 +336,7 @@ function setup(){
             pages[i].style = "display: none;";
             pages[i].appendChild(getNextButton());
         }
-        currentPageIndex = 5;
+        currentPageIndex = 0;
         contentRefresh();
 
     });
