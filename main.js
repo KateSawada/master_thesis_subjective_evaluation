@@ -133,21 +133,6 @@ function getPlayButton(filepath, text) {
 
 function onNextButtonClick() {
     console.log("currentPageIndex(before): " + currentPageIndex);
-    // if (canGoNextPage) {
-    //     // if (pageCount == currentPageIndex + 1) {
-    //     if (false) {  // TODO: 最後のページへ
-    //         // final-page へ飛ばす
-    //         // hideElement(pages[currentPageIndex]);
-    //         // showElement(document.getElementById("final-page"));
-    //     } else {
-    //         evaluation();
-    //         currentPageIndex += 1;
-    //         contentRefresh();
-    //         // hideElement(pages[currentPageIndex]);
-    //         // showElement(pages[currentPageIndex]);
-    //     }
-    // }
-    // console.log("currentPageIndex(after): " + currentPageIndex);
     if (!evaluation()) {
         alert("回答されていません");
         return false;
@@ -199,11 +184,15 @@ function contentRefresh() {
         let musics = musicJson.similarity[pageJson[currentPageIndex].question_id];
         let playButtonText = ["楽曲Xを再生", "楽曲Aを再生", "楽曲Bを再生"];
         for (let i = 0; i < playButtonText.length; i++){
-            expContentDiv.appendChild(getPlayButton(musics[i], playButtonText[i]));
+            let btn = createPlayButton(musics[i], playButtonText[i]);
+            expContentDiv.appendChild(btn);
         }
 
+        let text = document.createElement("p");
+        text.innerText = "どちらが楽曲Xに似ていると感じましたか?"
+        expContentDiv.appendChild(text);
         // 回答欄
-        let displayText = ["Aのほうが似ている", "Bのほうが似ている"];
+        let displayText = ["楽曲Aのほうが似ている", "楽曲Bのほうが似ている"];
         for (let i = 0; i < displayText.length; i++) {
             expContentDiv.appendChild(createRadio(i, "answer-input", displayText[i], i));
         }
@@ -267,6 +256,26 @@ function createButtonBase() {
     return btn;
 }
 
+function createPlayButton(src, text) {
+    let wrapperDiv = document.createElement('div');
+    let btn = document.createElement('button');
+    btn.onclick = play;
+    btn.className = "mdc-button mdc-button--outlined mdc-button--icon-leading"
+    btn.innerHTML = `
+    <span class="mdc-button__ripple"></span>
+    <i class="material-icons mdc-button__icon" aria-hidden="true">play_circle_outline</i>
+    <span class="mdc-button__label">${text}</span>
+    `;
+    let audio = document.createElement('audio');
+    audio.innerHTML = `
+    <source src="${src}" type="audio/wav">
+    `;
+    wrapperDiv.appendChild(audio);
+    wrapperDiv.appendChild(btn);
+    wrapperDiv.className = "margin_vertical";
+    return wrapperDiv;
+}
+
 function createTextFiled(name) {
     let wrapperDiv = document.createElement('div');
     wrapperDiv.innerHTML = `
@@ -313,7 +322,7 @@ function setup(){
             pages[i].style = "display: none;";
             pages[i].appendChild(getNextButton());
         }
-        currentPageIndex = 0;
+        currentPageIndex = 5;
         contentRefresh();
 
     });
@@ -333,8 +342,7 @@ function getJson(filename) {
 
 function play(e) {
     // 実装汚いけど…
-    console.log(e.path[1].children[1]);
-    let audio = e.path[1].children[1];
+    let audio = e.path[2].children[0];
     audio.play();
 }
 
