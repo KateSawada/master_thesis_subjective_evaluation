@@ -1,7 +1,5 @@
 /**
  * TODO: 送信前にemptyの回答がないかチェック
- * TODO: 回答済の場合の回答を表示
- * TODO: 未回答の場合に次ページに進ませない
  * TODO: 品質評価
  */
 
@@ -49,6 +47,22 @@ function evaluation() {
     console.log(answers);
 
     return checkAnswered();
+}
+
+function fillExistAnswer() {
+    if (answers[currentPageIndex] == null){
+        return;
+    }
+    inputs = document.getElementsByName("answer-input");
+    if (inputs.length > 0) {
+        if (isRadio.indexOf(pageJson[currentPageIndex].type) != -1) {
+            inputs[Number(answers[currentPageIndex])].checked = true;
+        } else if (pageJson[currentPageIndex].type == "text") {
+            inputs[0].value = answers[currentPageIndex];
+        }
+    } else if (pageJson[currentPageIndex].type == "introduction") {
+        // nothing to do
+    }
 }
 
 function checkAnswered (){
@@ -221,6 +235,7 @@ function contentRefresh() {
         }
     }
 
+    fillExistAnswer();
 
     if (currentPageIndex > 0) {
         // 最初のページ以外では「前へ」ボタン
