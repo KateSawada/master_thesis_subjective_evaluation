@@ -59,6 +59,26 @@ function onPrevButtonClick() {
     contentRefresh();
 }
 
+function getPlayButton(filepath, text) {
+    let audioSource = document.createElement("source");
+    audioSource.src = filepath;
+    audioSource.type = "audio/wav";
+
+    let audioElement = document.createElement("audio");
+    audioElement.appendChild(audioSource);
+
+    let btn = document.createElement("button");
+    btn.type = "button";
+    btn.innerText = text;
+    btn.onclick = play;
+
+    let wrapDiv = document.createElement("div");
+    wrapDiv.appendChild(btn);
+    wrapDiv.appendChild(audioElement);
+
+    return wrapDiv;
+}
+
 function onNextButtonClick() {
     console.log("currentPageIndex(before): " + currentPageIndex);
     if (canGoNextPage) {
@@ -100,6 +120,7 @@ function contentRefresh() {
         let displayText = ["はい", "いいえ"];
         let answerInput = [];
         for (let i = 0; i < displayText.length; i++) {
+            // はい/いいえで回答
             answerInput.push(document.createElement("input"));
             answerInput[i].type = "radio";
             answerInput[i].name = "answer-input";
@@ -112,13 +133,34 @@ function contentRefresh() {
             expContentDiv.appendChild(document.createElement("br"));
         }
     } else if (pageJson[currentPageIndex].type == "text") {
+        // テキストで回答
         let textInput = document.createElement("input");
         textInput.type = "text";
         textInput.name = "answer-input";
         expContentDiv.appendChild(textInput);
         expContentDiv.appendChild(document.createElement("br"));
     } else if (pageJson[currentPageIndex].type == "similarity") {
-        // TODO: 実装
+        // 類似楽曲回答
+
+        // 再生ボタン設置
+
+
+
+        // 回答欄
+        let displayText = ["Aのほうが似ている", "Bのほうが似ている"];
+        let answerInput = [];
+        for (let i = 0; i < displayText.length; i++) {
+            answerInput.push(document.createElement("input"));
+            answerInput[i].type = "radio";
+            answerInput[i].name = "answer-input";
+            answerInput[i].value = i;
+            // answerInput[i].onclick = evaluation;  // 動かん
+            let labelElement = document.createElement("label");
+            labelElement.appendChild(answerInput[i]);
+            labelElement.innerHTML += displayText[i];
+            expContentDiv.appendChild(labelElement);
+            expContentDiv.appendChild(document.createElement("br"));
+        }
     }
 
 
@@ -177,9 +219,10 @@ function getJson(filename) {
     return json;
 }
 
-function play(btn) {
-    console.log(btn);
-    let audio = document.getElementById("bgm1");
+function play(e) {
+    // 実装汚いけど…
+    console.log(e.path[1].children[1]);
+    let audio = e.path[1].children[1];
     audio.play();
 }
 
