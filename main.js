@@ -143,8 +143,11 @@ function contentRefresh() {
         // 類似楽曲回答
 
         // 再生ボタン設置
-
-
+        let musics = musicJson.similarity[pageJson[currentPageIndex].question_id];
+        let playButtonText = ["楽曲Xを再生", "楽曲Aを再生", "楽曲Bを再生"];
+        for (let i = 0; i < playButtonText.length; i++){
+            expContentDiv.appendChild(getPlayButton(musics[i], playButtonText[i]));
+        }
 
         // 回答欄
         let displayText = ["Aのほうが似ている", "Bのほうが似ている"];
