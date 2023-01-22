@@ -3,7 +3,6 @@
  * TODO: 回答済の場合の回答を表示
  * TODO: 未回答の場合に次ページに進ませない
  * TODO: 品質評価
- * TODO: 類似度評価
  */
 
 let canGoNextPage = true;
@@ -44,22 +43,22 @@ function evaluation() {
         } else if (pageJson[currentPageIndex].type == "text") {
             answers[currentPageIndex] = inputs[0].value;
         }
-    } else {
+    } else if (pageJson[currentPageIndex].type == "introduction") {
         answers[currentPageIndex] = "## INTRODUCTION ##";
     }
     console.log(answers);
+
+    return checkAnswered();
+}
+
+function checkAnswered (){
+    return ([null, ""].indexOf(answers[currentPageIndex]) == -1 ? true: false);
 }
 
 function onStartButtonClick() {
     document.getElementById('start-page').style.display ="none";
     document.getElementById("exp-page").style.display = "block";
     onNextButtonClick();
-}
-
-function onPrevButtonClick() {
-    evaluation();
-    currentPageIndex -= 1;
-    contentRefresh();
 }
 
 function onFinishButtonClick() {
@@ -121,21 +120,33 @@ function getPlayButton(filepath, text) {
 
 function onNextButtonClick() {
     console.log("currentPageIndex(before): " + currentPageIndex);
-    if (canGoNextPage) {
-        // if (pageCount == currentPageIndex + 1) {
-        if (false) {  // TODO: 最後のページへ
-            // final-page へ飛ばす
-            // hideElement(pages[currentPageIndex]);
-            // showElement(document.getElementById("final-page"));
-        } else {
-            evaluation();
-            currentPageIndex += 1;
-            contentRefresh();
-            // hideElement(pages[currentPageIndex]);
-            // showElement(pages[currentPageIndex]);
-        }
+    // if (canGoNextPage) {
+    //     // if (pageCount == currentPageIndex + 1) {
+    //     if (false) {  // TODO: 最後のページへ
+    //         // final-page へ飛ばす
+    //         // hideElement(pages[currentPageIndex]);
+    //         // showElement(document.getElementById("final-page"));
+    //     } else {
+    //         evaluation();
+    //         currentPageIndex += 1;
+    //         contentRefresh();
+    //         // hideElement(pages[currentPageIndex]);
+    //         // showElement(pages[currentPageIndex]);
+    //     }
+    // }
+    // console.log("currentPageIndex(after): " + currentPageIndex);
+    if (!evaluation()) {
+        alert("回答されていません");
+        return false;
     }
-    console.log("currentPageIndex(after): " + currentPageIndex);
+    currentPageIndex += 1;
+    contentRefresh();
+}
+
+function onPrevButtonClick() {
+    evaluation();
+    currentPageIndex -= 1;
+    contentRefresh();
 }
 
 function clearExpContentDiv(){
@@ -244,6 +255,9 @@ function setup(){
     expSetId = Math.trunc(Math.random() * 2);
     musicJson = getJson("musics.json")[expSetId];
     pageJson = getJson("pages.json");
+    for (let i = 0; i < pageJson.length; i++) {
+        answers.push(null);
+    }
     window.addEventListener('DOMContentLoaded', (event) => {
         expTitleDiv = document.getElementById("exp-page-title");
         expContentDiv = document.getElementById("exp-content");
