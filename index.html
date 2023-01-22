@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html lang="ja">
     <head>
-        <link rel="stylesheet" href="style.css">
+        <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+        <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <script type="text/javascript" src="main.js"></script>
+        <style>
+            :root {
+                --mdc-theme-primary: #6200ee;
+                --mdc-theme-secondary: #6200ee;
+            }
+        </style>
     </head>
-    <body>
-        <div id="exp-page" display="none">
+    <body class="mdc-touch-target-wrapper" style="background-color: #F0EBF8;">
+        <div id="exp-page" display="none", style="margin: auto;max-width: 90vw;  width: 640px; background-color: #fff; padding: 24px; border: 1px solid #dadce0; border-radius: 8px;">
             <h1 id="exp-page-title"></h1>
             <div id="exp-content">
             </div>

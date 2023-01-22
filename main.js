@@ -186,27 +186,12 @@ function contentRefresh() {
 
     if (pageJson[currentPageIndex].type == "yes-no") {
         let displayText = ["はい", "いいえ"];
-        let answerInput = [];
         for (let i = 0; i < displayText.length; i++) {
-            // はい/いいえで回答
-            answerInput.push(document.createElement("input"));
-            answerInput[i].type = "radio";
-            answerInput[i].name = "answer-input";
-            answerInput[i].value = i;
-            // answerInput[i].onclick = evaluation;  // 動かん
-            let labelElement = document.createElement("label");
-            labelElement.appendChild(answerInput[i]);
-            labelElement.innerHTML += displayText[i];
-            expContentDiv.appendChild(labelElement);
-            expContentDiv.appendChild(document.createElement("br"));
+            expContentDiv.appendChild(createRadio(i, "answer-input", displayText[i], i));
         }
     } else if (pageJson[currentPageIndex].type == "text") {
         // テキストで回答
-        let textInput = document.createElement("input");
-        textInput.type = "text";
-        textInput.name = "answer-input";
-        expContentDiv.appendChild(textInput);
-        expContentDiv.appendChild(document.createElement("br"));
+        expContentDiv.appendChild(createTextFiled("answer-input"));
     } else if (pageJson[currentPageIndex].type == "similarity") {
         // 類似楽曲回答
 
@@ -219,18 +204,8 @@ function contentRefresh() {
 
         // 回答欄
         let displayText = ["Aのほうが似ている", "Bのほうが似ている"];
-        let answerInput = [];
         for (let i = 0; i < displayText.length; i++) {
-            answerInput.push(document.createElement("input"));
-            answerInput[i].type = "radio";
-            answerInput[i].name = "answer-input";
-            answerInput[i].value = i;
-            // answerInput[i].onclick = evaluation;  // 動かん
-            let labelElement = document.createElement("label");
-            labelElement.appendChild(answerInput[i]);
-            labelElement.innerHTML += displayText[i];
-            expContentDiv.appendChild(labelElement);
-            expContentDiv.appendChild(document.createElement("br"));
+            expContentDiv.appendChild(createRadio(i, "answer-input", displayText[i], i));
         }
     }
 
@@ -244,22 +219,79 @@ function contentRefresh() {
         // 最後のページ以外では「次へ」ボタン
         expContentDiv.appendChild(getNextButton());
     } else if (currentPageIndex == pageJson.length - 1) {
-        let btn = document.createElement('button');
+        let btn = createButtonBase()
+        btn.className = "mdc-button mdc-button--raised";
         btn.onclick = onFinishButtonClick;
         btn.innerText = "回答を送信";
         expContentDiv.appendChild(btn);
     }
 }
 
-function getNextButton() {
+
+function createRadio(id, name, text, value) {
+    let wrapperDiv = document.createElement('div');
+    let formDiv = document.createElement('div');
+    formDiv.className = "mdc-form-field";
+    formDiv.innerHTML = `
+    <div>
+        <div class="mdc-form-field">
+            <div class="mdc-radio">
+                <input class="mdc-radio__native-control" type="radio" id="radio${id}" name="${name}" value=${value}>
+                <div class="mdc-radio__background">
+                <div class="mdc-radio__outer-circle"></div>
+                <div class="mdc-radio__inner-circle"></div>
+            </div>
+            <div class="mdc-radio__ripple"></div>
+            <div class="mdc-radio__focus-ring"></div>
+        </div>
+        <label for="radio${id}">${text}</label>
+    </div>`;
+    wrapperDiv.appendChild(formDiv);
+    wrapperDiv.style.marginTop = "4px;";
+    wrapperDiv.style.marginBottom = "4px;";
+    return wrapperDiv;
+}
+
+
+function createButtonBase() {
+    let span1 = document.createElement('span');
+    span1.className = "mdc-button__ripple";
+    let span2 = document.createElement("span");
+    span2.className = "mdc-button__focus-ring";
     let btn = document.createElement('button');
+    btn.appendChild(span1);
+    btn.appendChild(span2);
+    btn.style.marginRight = "8px";
+    btn.style.marginBottom = "4px";
+    btn.style.marginTop = "4px";
+    return btn;
+}
+
+function createTextFiled(name) {
+    let wrapperDiv = document.createElement('div');
+    wrapperDiv.innerHTML = `
+    <label class="mdc-text-field mdc-text-field--outlined mdc-text-field--no-label">
+    <span class="mdc-notched-outline">
+        <span class="mdc-notched-outline__leading"></span>
+        <span class="mdc-notched-outline__trailing"></span>
+    </span>
+    <input class="mdc-text-field__input" type="text" name="${name}" aria-label="Label">
+    </label>
+    `;
+    return wrapperDiv;
+}
+
+function getNextButton() {
+    let btn = createButtonBase()
+    btn.className = "mdc-button mdc-button--raised";
     btn.onclick = onNextButtonClick;
     btn.innerText = "次へ";
     return btn;
 }
 
 function getPrevButton() {
-    let btn = document.createElement('button');
+    let btn = createButtonBase()
+    btn.className = "mdc-button mdc-button--outlined";
     btn.onclick = onPrevButtonClick;
     btn.innerText = "前へ";
     return btn;
