@@ -13,12 +13,15 @@ let expTitleDiv = null;
 let expContentDiv = null;
 let answers = [];
 
+let isMusicPlayed = [];
+
 const spreadSheetUrl = "https://script.google.com/macros/s/AKfycbyVSDp8l-0WQDgAeSsAI6ni5p7EgUh0vETlV-DOAbcPF0Q-Xzk64ZU5p0ErqgcOwKrEGA/exec"
 
 // pages.json properties
 let hasText = ["text", "yes-no", "introduction"];
 let hasQuestion = ["text", "yes-no"];
 let isRadio = ["yes-no", "similarity"];
+let isPlayRequired = ["similarity"];
 
 function showElement(elem) {
     elem.style.display = "block";
@@ -155,7 +158,7 @@ function clearExpContentDiv(){
 
 function contentRefresh() {
     clearExpContentDiv();
-
+    isMusicPlayed = [];
     // ヘッダー更新
     expTitleDiv.innerText = pageJson[currentPageIndex].header;
 
@@ -184,8 +187,11 @@ function contentRefresh() {
         let musics = musicJson.similarity[pageJson[currentPageIndex].question_id];
         let playButtonText = ["楽曲Xを再生", "楽曲Aを再生", "楽曲Bを再生"];
         for (let i = 0; i < playButtonText.length; i++){
-            let btn = createPlayButton(musics[i], playButtonText[i]);
+            let btn = createPlayButton(musics[i], playButtonText[i], i);
             expContentDiv.appendChild(btn);
+
+            // 再生完了かのフラグ
+            isMusicPlayed[i] = false;
         }
 
         let text = document.createElement("p");
@@ -206,7 +212,12 @@ function contentRefresh() {
     }
     if (currentPageIndex < pageJson.length - 1) {
         // 最後のページ以外では「次へ」ボタン
-        expContentDiv.appendChild(getNextButton());
+        let nextBtn = getNextButton()
+        // 楽曲再生のページは初期状態でdisabled
+        if (isPlayRequired.indexOf(pageJson[currentPageIndex].type) != -1) {
+            nextBtn.disabled = true;
+        }
+        expContentDiv.appendChild(nextBtn);
     } else if (currentPageIndex == pageJson.length - 1) {
         let btn = createButtonBase()
         btn.className = "mdc-button mdc-button--raised";
@@ -256,7 +267,7 @@ function createButtonBase() {
     return btn;
 }
 
-function createPlayButton(src, text) {
+function createPlayButton(src, text, order) {
     let wrapperDiv = document.createElement('div');
     let btn = document.createElement('button');
     btn.onclick = play;
@@ -267,6 +278,7 @@ function createPlayButton(src, text) {
     <span class="mdc-button__label">${text}</span>
     `;
     let audio = document.createElement('audio');
+    audio.setAttribute("order", order);
     audio.innerHTML = `
     <source src="${src}" type="audio/wav">
     `;
@@ -292,6 +304,7 @@ function createTextFiled(name) {
 
 function getNextButton() {
     let btn = createButtonBase()
+    btn.id = "next-button";
     btn.className = "mdc-button mdc-button--raised";
     btn.onclick = onNextButtonClick;
     btn.innerText = "次へ";
@@ -300,6 +313,7 @@ function getNextButton() {
 
 function getPrevButton() {
     let btn = createButtonBase()
+    btn.id = "prev-button";
     btn.className = "mdc-button mdc-button--outlined";
     btn.onclick = onPrevButtonClick;
     btn.innerText = "前へ";
@@ -343,7 +357,22 @@ function getJson(filename) {
 function play(e) {
     // 実装汚いけど…
     let audio = e.path[2].children[0];
+    audio.addEventListener("ended", function () {
+        onPlayEnded(audio.getAttribute("order"))
+    }, false);
     audio.play();
+}
+
+function onPlayEnded(order) {
+    console.log(`end ${order}`);
+    isMusicPlayed[order] = true;
+    let canPressNext = true;
+    for (let i = 0; i < isMusicPlayed.length; i++) {
+        canPressNext = canPressNext && isMusicPlayed[i];
+    }
+    if (canPressNext) {
+        document.getElementById("next-button").disabled = false;
+    }
 }
 
 function main() {
