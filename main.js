@@ -15,7 +15,7 @@ let answers = [];
 
 let isMusicPlayed = [];
 
-const spreadSheetUrl = "https://script.google.com/macros/s/AKfycbyVSDp8l-0WQDgAeSsAI6ni5p7EgUh0vETlV-DOAbcPF0Q-Xzk64ZU5p0ErqgcOwKrEGA/exec"
+const spreadSheetUrl = "https://script.google.com/macros/s/AKfycbxIOcL-Kp7M0147V5vJIslZnNlT0Nx_qzl1udg5rBv12b4NJ0XOmArumNO4fouz9FCJPw/exec"
 
 // pages.json properties
 let hasText = ["text", "yes-no", "introduction"];
@@ -114,25 +114,25 @@ async function sendData(){
     fetch(spreadSheetUrl, postParam);
 }
 
-function getPlayButton(filepath, text) {
-    let audioSource = document.createElement("source");
-    audioSource.src = filepath;
-    audioSource.type = "audio/wav";
+// function getPlayButton(filepath, text) {
+//     let audioSource = document.createElement("source");
+//     audioSource.src = filepath;
+//     audioSource.type = "audio/wav";
 
-    let audioElement = document.createElement("audio");
-    audioElement.appendChild(audioSource);
+//     let audioElement = document.createElement("audio");
+//     audioElement.appendChild(audioSource);
 
-    let btn = document.createElement("button");
-    btn.type = "button";
-    btn.innerText = text;
-    btn.onclick = play;
+//     let btn = document.createElement("button");
+//     btn.type = "button";
+//     btn.innerText = text;
+//     btn.onclick = play;
 
-    let wrapDiv = document.createElement("div");
-    wrapDiv.appendChild(btn);
-    wrapDiv.appendChild(audioElement);
+//     let wrapDiv = document.createElement("div");
+//     wrapDiv.appendChild(btn);
+//     wrapDiv.appendChild(audioElement);
 
-    return wrapDiv;
-}
+//     return wrapDiv;
+// }
 
 function onNextButtonClick() {
     console.log("currentPageIndex(before): " + currentPageIndex);
@@ -267,10 +267,17 @@ function createButtonBase() {
     return btn;
 }
 
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0,
+          v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
 function createPlayButton(src, text, order) {
     let wrapperDiv = document.createElement('div');
     let btn = document.createElement('button');
-    btn.onclick = play;
     btn.className = "mdc-button mdc-button--outlined mdc-button--icon-leading"
     btn.innerHTML = `
     <span class="mdc-button__ripple"></span>
@@ -279,6 +286,10 @@ function createPlayButton(src, text, order) {
     `;
     let audio = document.createElement('audio');
     audio.setAttribute("order", order);
+    let uuid = generateUUID();
+    audioElemId = `audio-${uuid}`;
+    audio.id = audioElemId;
+    btn.setAttribute("onclick", `play(document.getElementById(\"${audioElemId}\"))`);
     audio.innerHTML = `
     <source src="${src}" type="audio/wav">
     `;
@@ -354,9 +365,7 @@ function getJson(filename) {
     return json;
 }
 
-function play(e) {
-    // 実装汚いけど…
-    let audio = e.path[2].children[0];
+function play(audio) {
     audio.addEventListener("ended", function () {
         onPlayEnded(audio.getAttribute("order"))
     }, false);
