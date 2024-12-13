@@ -217,7 +217,7 @@ function contentRefresh() {
         createRadio(i, "answer-input", displayText[i], i)
       );
     }
-  } else if (pageJson[currentPageIndex].type == "evaluation1") {
+  } else if (pageJson[currentPageIndex].type == "mos1") {
     // 短い曲・3項目
     let music = musicJson[pageJson[currentPageIndex].question_id];
     let btn = createPlayButton([music], "再生", 0);
@@ -233,7 +233,7 @@ function contentRefresh() {
 
     // 再生完了かのフラグ
     isMusicPlayed[0] = false;
-  } else if (pageJson[currentPageIndex].type == "evaluation2") {
+  } else if (pageJson[currentPageIndex].type == "mos2") {
     // 長い曲・4項目
   }
 
