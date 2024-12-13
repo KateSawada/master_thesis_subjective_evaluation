@@ -217,6 +217,24 @@ function contentRefresh() {
         createRadio(i, "answer-input", displayText[i], i)
       );
     }
+  } else if (pageJson[currentPageIndex].type == "evaluation1") {
+    // 短い曲・3項目
+    let music = musicJson[pageJson[currentPageIndex].question_id];
+    let btn = createPlayButton([music], "再生", 0);
+    expContentDiv.appendChild(btn);
+
+    expContentDiv.appendChild(
+      create5valueInput(
+        currentPageIndex,
+        ["音楽性", "自然さ", "創造性"],
+        "answer-input"
+      )
+    );
+
+    // 再生完了かのフラグ
+    isMusicPlayed[0] = false;
+  } else if (pageJson[currentPageIndex].type == "evaluation2") {
+    // 長い曲・4項目
   }
 
   fillExistAnswer();
@@ -261,6 +279,49 @@ function createRadio(id, name, text, value) {
         <label for="radio${id}">${text}</label>
     </div>`;
   wrapperDiv.appendChild(formDiv);
+  wrapperDiv.style.marginTop = "4px;";
+  wrapperDiv.style.marginBottom = "4px;";
+  return wrapperDiv;
+}
+
+function create5valueInput(id, labels, name) {
+  // 5段階MOSの入力欄を作成
+  // id: int, 設問id
+  // labels: list[string], 項目の文字列
+  // name: string, name属性
+  let wrapperDiv = document.createElement("div");
+
+  for (let i = 0; i < labels.length; i++) {
+    let formDiv = document.createElement("div");
+    formDiv.style.margin = "12px";
+    let labelElem = document.createElement("span");
+    labelElem.innerText = labels[i];
+    labelElem.style.marginRight = "18px";
+    formDiv.appendChild(labelElem);
+    for (let j = 0; j < 5; j++) {
+      let radioDiv = document.createElement("div");
+      radioDiv.className = "mdc-form-field";
+      radioDiv.innerHTML = `
+      <div class="mdc-radio-group-vertical">
+        <div class="mdc-radio">
+            <input class="mdc-radio__native-control" type="radio" id="radio${id}-${i}-${j}" name="${name}-${i}" value=${j}>
+            <div class="mdc-radio__background">
+                <div class="mdc-radio__outer-circle"></div>
+                <div class="mdc-radio__inner-circle"></div>
+            </div>
+            <div class="mdc-radio__ripple"></div>
+            <div class="mdc-radio__focus-ring"></div>
+        </div>
+        <label class="mdc-radio-label-vertical" for="radio${id}-${i}-${j}">${
+        j + 1
+      }</label>
+      </div>`;
+
+      formDiv.appendChild(radioDiv);
+    }
+    wrapperDiv.appendChild(formDiv);
+  }
+
   wrapperDiv.style.marginTop = "4px;";
   wrapperDiv.style.marginBottom = "4px;";
   return wrapperDiv;
@@ -350,7 +411,7 @@ function getPrevButton() {
 function setup() {
   expSetId = Math.trunc(Math.random() * 2);
   musicJson = getJson("musics.json")[expSetId];
-  pageJson = getJson("pages.json");
+  pageJson = getJson("underDeveloping.json");
   for (let i = 0; i < pageJson.length; i++) {
     answers.push(null);
   }

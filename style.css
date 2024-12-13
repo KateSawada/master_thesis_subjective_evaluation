@@ -2,3 +2,16 @@
     margin-top: 8px;
     margin-bottom: 8px;
 }
+
+.mdc-radio-group-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 中央揃え（必要に応じて調整） */
+    margin-bottom: 0px; /* ラジオボタン同士の余白 */
+}
+
+.mdc-radio-label-vertical {
+    margin-top: 0px; /* ラジオボタンとの間隔 */
+    font-size: 12px; /* ラベルのフォントサイズ（任意） */
+    text-align: center; /* テキストの中央揃え（任意） */
+}
