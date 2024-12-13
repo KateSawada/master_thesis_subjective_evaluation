@@ -22,7 +22,8 @@ const spreadSheetUrl =
 let hasText = ["text", "yes-no", "introduction"];
 let hasQuestion = ["text", "yes-no"];
 let isRadio = ["yes-no", "similarity"];
-let isPlayRequired = ["similarity"];
+let isPlayRequired = ["similarity", "mos1", "mos2"];
+let is5Radios = ["mos1", "mos2"];
 
 function showElement(elem) {
   elem.style.display = "block";
@@ -32,13 +33,50 @@ function hideElement(elem) {
   elem.style.display = "none";
 }
 
+function replaceAt(str, index, replacement) {
+  if (index < 0 || index >= str.length) {
+    throw new Error("Index out of bounds");
+  }
+  return str.slice(0, index) + replacement + str.slice(index + 1);
+}
+
+function getElementsByNameStartsWith(prefix) {
+  let elements = document.querySelectorAll("[name]");
+  let filtered = Array.from(elements).filter((el) =>
+    el.name.startsWith(prefix)
+  );
+  return filtered;
+}
+
 function evaluation() {
-  inputs = document.getElementsByName("answer-input");
+  inputs = getElementsByNameStartsWith("answer-input");
   if (inputs.length > 0) {
     if (isRadio.indexOf(pageJson[currentPageIndex].type) != -1) {
       for (let i = 0; i < inputs.length; i++) {
         if (inputs[i].checked) {
           answers[currentPageIndex] = inputs[i].value;
+        }
+      }
+    } else if (is5Radios.indexOf(pageJson[currentPageIndex].type) != -1) {
+      // MOSの場合は，項目ごと順番に文字列で評価値を格納．3項目がそれぞれ3, 5, 2の場合は "352"になる
+      answers[currentPageIndex] = " ".repeat(
+        Math.floor(document.getElementsByClassName("mdc-form-field").length) / 5
+      );
+      for (
+        let i = 0;
+        i < document.getElementsByClassName("mdc-form-field").length / 5;
+        i++
+      ) {
+        inputs = document.getElementsByName(`answer-input-${i}`);
+        for (var j = 0; j < inputs.length; j++) {
+          if (inputs[j].checked) {
+            console.log("Checking");
+            answers[currentPageIndex] = replaceAt(
+              answers[currentPageIndex],
+              i,
+              (j + 1).toString() // indexであるjは0始まりだが，評価値は1始まりのため補正
+            );
+          }
         }
       }
     } else if (pageJson[currentPageIndex].type == "text") {
