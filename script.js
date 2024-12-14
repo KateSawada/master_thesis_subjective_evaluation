@@ -274,7 +274,6 @@ function createMos(pageIndex, pageContent, labels) {
   contentDiv.appendChild(headerH1);
 
   let musicSrc = musicJson[pageContent.music_id];
-  console.log(musicSrc);
   let btn = createPlayButton(musicSrc, "再生", pageIndex);
   contentDiv.appendChild(btn);
 
@@ -389,7 +388,6 @@ function createPlayButton(src, text, pageIndex) {
 }
 
 function onPlayEnded(pageIndex) {
-  console.log(pageIndex);
   canGoNextPage[pageIndex] = true;
   nextButtons[pageIndex].disabled = false;
   prevButtons[pageIndex].disabled = false;
