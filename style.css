@@ -15,3 +15,20 @@
     font-size: 12px; /* ラベルのフォントサイズ（任意） */
     text-align: center; /* テキストの中央揃え（任意） */
 }
+
+.buttons-container {
+    display: flex;            /* フレックスボックスを有効化 */
+    justify-content: space-between; /* 子要素を左右の端に配置 */
+    align-items: center;      /* 縦方向を中央揃え */
+    padding: 10px;            /* 親要素に余白を追加（任意） */
+    width: 100%;              /* 横幅を指定（任意） */
+    box-sizing: border-box;   /* パディングを含む幅計算 */
+}
+
+.left-button {
+    margin-right: auto;           /* 左ボタンがあれば右側にスペースを空ける */
+}
+
+.right-button {
+    margin-left: auto;           /* 左ボタンがあれば右側にスペースを空ける */
+}

@@ -16,11 +16,14 @@ const spreadSheetUrl =
 let isPlayRequired = ["mos1", "mos2"];
 let pages = []; // html element
 let nextButtons = []; // html element
+let prevButtons = []; // html element
+let expSetId = -1;
 
 function setup() {
+  expSetId = Math.trunc(Math.random() * 2);
   pageJson = getJson("underDeveloping.json"); // TODO: ここ実際のpages.jsonに変える
   //   pageJson = getJson("pages.json");
-  musicJson = getJson("musics.json");
+  musicJson = getJson("musics.json")[expSetId];
 
   canGoNextPage = Array(pageJson.length).fill(false);
   answers = Array(pageJson.length).fill(null);
@@ -39,22 +42,38 @@ function setup() {
     } else if (pageJson[i].type == "mos2") {
       pages[i] = createMos(i, pageJson[i], mosLabels[1]);
     }
+    let buttonContainer = document.createElement("div");
+    buttonContainer.className = "buttons-container";
+    if (i > 0) {
+      prevButtons[i] = createPrevPageButton(i);
+      buttonContainer.appendChild(prevButtons[i]);
+    }
     if (i < pageJson.length - 1) {
       nextButtons[i] = createNextPageButton(i);
-      pages[i].appendChild(nextButtons[i]);
+      buttonContainer.appendChild(nextButtons[i]);
     } else {
       let btn = createButtonBase();
       btn.className = "mdc-button mdc-button--raised";
       btn.onclick = onFinishButtonClick;
       btn.innerText = "回答を送信";
-      pages[i].appendChild(btn);
+      buttonContainer.appendChild(btn);
     }
+    pages[i].appendChild(buttonContainer);
   }
 
   for (let i = 0; i < pages.length; i++) {
-    console.log(pages[i]);
+    pages[i].style.display = "none";
     document.getElementById("exp-content").appendChild(pages[i]);
   }
+  pages[0].style.display = "block";
+}
+
+function getElementsByNameStartsWith(prefix) {
+  let elements = document.querySelectorAll("[name]");
+  let filtered = Array.from(elements).filter((el) =>
+    el.name.startsWith(prefix)
+  );
+  return filtered;
 }
 
 async function sendData() {
@@ -111,17 +130,63 @@ function createButtonBase() {
 }
 
 function onNextButtonClick() {
-  // TODO: ここ変える
   // ページの内容が回答済か確認（pageJsonの中を見て，typeによって分岐），未回答だったらalert出す
   // answersへの格納（typeによって分岐）
+  if (pageJson[currentPageIndex].type == "yes-no") {
+    let radios = document.getElementsByName(`page-${currentPageIndex}`);
+    let checked = false;
+    for (let i = 0; i < radios.length; i++) {
+      if (radios[i].checked) {
+        checked = true;
+        answers[currentPageIndex] = radios[i].value;
+        break;
+      }
+    }
+    if (!checked) {
+      alert("未回答です．");
+      return;
+    }
+  } else if (
+    pageJson[currentPageIndex].type === "mos1" ||
+    pageJson[currentPageIndex].type === "mos2"
+  ) {
+    // MOSの場合は，項目ごと順番に文字列で評価値を格納．3項目がそれぞれ3, 5, 2の場合は "352"になる
+    let forms = getElementsByNameStartsWith(`page-${currentPageIndex}`);
+    answers[currentPageIndex] = " ".repeat(forms.length / 5);
+    let notAllChecked = true;
+    for (let i = 0; i < forms.length / 5; i++) {
+      let radios = document.getElementsByName(`page-${currentPageIndex}-${i}`);
+      let checked = false;
+      for (let j = 0; j < radios.length; j++) {
+        if (radios[j].checked) {
+          checked = true;
+          answers[currentPageIndex] =
+            answers[currentPageIndex].substring(0, i) +
+            (j + 1).toString() + // indexであるjは0始まりだが，評価値は1始まりのため補正
+            answers[currentPageIndex].substring(i + 1);
+          break;
+        }
+      }
+      if (!checked) {
+        notAllChecked = false;
+      }
+    }
+    if (!notAllChecked) {
+      alert("未回答です．");
+      return;
+    }
+  }
   // pageの中身を更新（visibleの変更）
   // currentPageIndex更新
+  pages[currentPageIndex].style.display = "none";
+  pages[currentPageIndex + 1].style.display = "block";
+  currentPageIndex += 1;
 }
 
 function createNextPageButton(pageIndex) {
   let btn = createButtonBase();
   btn.id = `next-button-${pageIndex}`;
-  btn.className = "mdc-button mdc-button--raised";
+  btn.className = "mdc-button mdc-button--raised right-button";
   btn.onclick = onNextButtonClick;
   btn.innerText = "次へ";
   btn.disabled = !canGoNextPage[pageIndex];
@@ -130,10 +195,37 @@ function createNextPageButton(pageIndex) {
 
 function createPrevPageButton(pageIndex) {
   // ボタン作る
-  // onclickに，ページ内容書き換える関数を実装する（visibleの変更）
-  // currentPageIndex更新
+  let btn = createButtonBase();
+  btn.id = `prev-button-${pageIndex}`;
+  btn.className = "mdc-button mdc-button--raised left-button";
+  btn.onclick = onPrevButtonClick;
+  btn.innerText = "前へ";
+  btn.disabled = !canGoNextPage[pageIndex];
+  return btn;
 }
 
+const formatDate = (current_datetime) => {
+  let formatted_date =
+    current_datetime.getFullYear() +
+    "-" +
+    (current_datetime.getMonth() + 1) +
+    "-" +
+    current_datetime.getDate() +
+    " " +
+    current_datetime.getHours() +
+    ":" +
+    current_datetime.getMinutes() +
+    ":" +
+    current_datetime.getSeconds();
+  return formatted_date;
+};
+
+function onPrevButtonClick() {
+  // currentPageIndex更新
+  pages[currentPageIndex].style.display = "none";
+  pages[currentPageIndex - 1].style.display = "block";
+  currentPageIndex -= 1;
+}
 function createYesNo(pageIndex, pageContent) {
   let contentDiv = document.createElement("div");
 
@@ -199,7 +291,7 @@ function createMos(pageIndex, pageContent, labels) {
       radioDiv.innerHTML = `
       <div class="mdc-radio-group-vertical">
         <div class="mdc-radio">
-            <input class="mdc-radio__native-control" type="radio" id="radio-${pageIndex}-${i}" name="page-${pageIndex}-${i}" value=${j}>
+            <input class="mdc-radio__native-control" type="radio" id="radio-${pageIndex}-${i}-${j}" name="page-${pageIndex}-${i}" value=${j}>
             <div class="mdc-radio__background">
                 <div class="mdc-radio__outer-circle"></div>
                 <div class="mdc-radio__inner-circle"></div>
@@ -207,7 +299,7 @@ function createMos(pageIndex, pageContent, labels) {
             <div class="mdc-radio__ripple"></div>
             <div class="mdc-radio__focus-ring"></div>
         </div>
-        <label class="mdc-radio-label-vertical" for="radio-${pageIndex}-${i}">${
+        <label class="mdc-radio-label-vertical" for="radio-${pageIndex}-${i}-${j}">${
         j + 1
       }</label>
       </div>`;
@@ -300,6 +392,7 @@ function onPlayEnded(pageIndex) {
   console.log(pageIndex);
   canGoNextPage[pageIndex] = true;
   nextButtons[pageIndex].disabled = false;
+  prevButtons[pageIndex].disabled = false;
 }
 
 function main() {

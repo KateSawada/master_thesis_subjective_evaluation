@@ -1,4 +1,10 @@
-{
-    "0": "musics/test_sound.wav",
-    "1": "musics/test_sound.wav"
-}
+[
+    {
+        "0": "musics/test_sound.wav",
+        "1": "musics/test_sound.wav"
+    },
+    {
+        "0": "musics/test_sound.wav",
+        "1": "musics/test_sound.wav"
+    }
+]
