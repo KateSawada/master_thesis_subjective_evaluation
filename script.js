@@ -11,7 +11,7 @@ let mosLabels = [
 let currentPageIndex = 0;
 
 const spreadSheetUrl =
-  "https://script.google.com/macros/s/AKfycbxIOcL-Kp7M0147V5vJIslZnNlT0Nx_qzl1udg5rBv12b4NJ0XOmArumNO4fouz9FCJPw/exec";
+  "https://script.google.com/macros/s/AKfycbwKHN3n7D6u3NvFrMsj2dT0N5DTprHxh7GyPVwL436F8AN0o3hQil1krV0pgeYom0ZzUw/exec";
 
 let isPlayRequired = ["mos1", "mos2"];
 let pages = []; // html element
@@ -21,8 +21,8 @@ let expSetId = -1;
 
 function setup() {
   expSetId = Math.trunc(Math.random() * 2);
-  pageJson = getJson("underDeveloping.json"); // TODO: ここ実際のpages.jsonに変える
-  //   pageJson = getJson("pages.json");
+  // pageJson = getJson("underDeveloping.json"); // TODO: ここ実際のpages.jsonに変える
+  pageJson = getJson("pages.json");
   musicJson = getJson("musics.json")[expSetId];
 
   canGoNextPage = Array(pageJson.length).fill(false);

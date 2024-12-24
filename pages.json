@@ -47,14 +47,14 @@
             ]
     },
     {
-        "type": "evaluation1",
+        "type": "mos1",
         "header": "類似楽曲の評価",
-        "question_id": 0
+        "music_id": 0
     },
     {
-        "type": "similarity",
+        "type": "mos1",
         "header": "類似楽曲の評価",
-        "question_id": 1
+        "music_id": 1
     },
     {
         "type": "introduction",
