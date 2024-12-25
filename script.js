@@ -365,6 +365,8 @@ function getJson(filename) {
 }
 
 function play(audio) {
+  nextButtons[audio.getAttribute("pageIndex")].disabled = true;
+  prevButtons[audio.getAttribute("pageIndex")].disabled = true;
   audio.addEventListener(
     "ended",
     function () {
