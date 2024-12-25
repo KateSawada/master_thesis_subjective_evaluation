@@ -285,7 +285,7 @@ function createMos(pageIndex, pageContent, labels) {
   let contentDiv = document.createElement("div");
 
   let headerH1 = document.createElement("h1");
-  headerH1.innerText = "楽曲品質の評価";
+  headerH1.innerText = pageJson[pageIndex]["header"];
   contentDiv.appendChild(headerH1);
 
   let musicSrc = musicJson[pageContent.music_id];
