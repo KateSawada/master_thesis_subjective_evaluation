@@ -19,6 +19,21 @@ let nextButtons = []; // html element
 let prevButtons = []; // html element
 let expSetId = -1;
 
+function device() {
+  const ua = navigator.userAgent;
+  if (
+    ua.indexOf("iPhone") > 0 ||
+    ua.indexOf("iPod") > 0 ||
+    (ua.indexOf("Android") > 0 && ua.indexOf("Mobile") > 0)
+  ) {
+    return "mobile";
+  } else if (ua.indexOf("iPad") > 0 || ua.indexOf("Android") > 0) {
+    return "tablet";
+  } else {
+    return "desktop";
+  }
+}
+
 function setup() {
   expSetId = Math.trunc(Math.random() * 2);
   // pageJson = getJson("underDeveloping.json"); // TODO: ここ実際のpages.jsonに変える
@@ -394,7 +409,12 @@ function onPlayEnded(pageIndex) {
 }
 
 function main() {
-  setup();
+  if (device().indexOf("desktop") <= 0) {
+    alert("この実験はPCのみ対応しています．");
+    return;
+  } else {
+    setup();
+  }
 }
 
 // invalid enter key
