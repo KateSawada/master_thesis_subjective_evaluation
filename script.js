@@ -292,13 +292,20 @@ function createMos(pageIndex, pageContent, labels) {
   let btn = createPlayButton(musicSrc, "再生", pageIndex);
   contentDiv.appendChild(btn);
 
+  let formDiv = document.createElement("div");
+  formDiv.className = "mos-container";
+
   for (let i = 0; i < labels.length; i++) {
-    let formDiv = document.createElement("div");
-    formDiv.style.margin = "12px";
-    let labelElem = document.createElement("span");
+    let rowDiv = document.createElement("div");
+    rowDiv.style.margin = "12px";
+    rowDiv.className = "mos-row";
+    let labelElem = document.createElement("div");
+    labelElem.className = "mos-label";
     labelElem.innerText = labels[i];
     labelElem.style.marginRight = "18px";
-    formDiv.appendChild(labelElem);
+    rowDiv.appendChild(labelElem);
+    radiosDiv = document.createElement("div");
+    radiosDiv.className = "mos-input";
     for (let j = 0; j < 5; j++) {
       let radioDiv = document.createElement("div");
       radioDiv.className = "mdc-form-field";
@@ -318,10 +325,12 @@ function createMos(pageIndex, pageContent, labels) {
       }</label>
       </div>`;
 
-      formDiv.appendChild(radioDiv);
+      radiosDiv.appendChild(radioDiv);
     }
-    contentDiv.appendChild(formDiv);
+    rowDiv.appendChild(radiosDiv);
+    formDiv.appendChild(rowDiv);
   }
+  contentDiv.appendChild(formDiv);
 
   return contentDiv;
 }

@@ -32,3 +32,24 @@
 .right-button {
     margin-left: auto;           /* 左ボタンがあれば右側にスペースを空ける */
 }
+
+
+.mos-container {
+    display: table;
+    width: 100%;
+    gap: 8px;
+}
+.mos-row {
+    display: table-row;
+}
+
+.mos-label {
+    display: table-cell;
+    vertical-align: center;
+    padding-right: 8px;
+    text-align: right;
+}
+.mos-input {
+    display: table-cell;
+    vertical-align: center;
+}
