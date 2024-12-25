@@ -409,8 +409,10 @@ function onPlayEnded(pageIndex) {
 }
 
 function main() {
-  if (device().indexOf("desktop") <= 0) {
-    alert("この実験はPCのみ対応しています．");
+  if (device().indexOf("desktop") < 0) {
+    alert(
+      "この実験はスマートフォン・タブレットには対応していません．PCでご参加ください．"
+    );
     return;
   } else {
     setup();
