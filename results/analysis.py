@@ -64,27 +64,7 @@ def graph(grouped_values, filename, type_="mos1"):
     plt.savefig(filename)
 
 
-if __name__ == "__main__":
-    header = []
-    rows = []
-    with open(FILENAME) as f:
-        reader = csv.reader(f)
-        for i, row in enumerate(reader):
-            if (i + 1) in IGNORE_ROWS:
-                continue
-            elif i == 0:
-                header = row
-            else:
-                rows.append(row)
-    mos1_pattern = r"^([A-Za-z]{2})_[0-9]$"
-    index_questions_mos1 = [
-        i for i, s in enumerate(header) if re.match(mos1_pattern, s)
-    ]
-    mos2_pattern = r"^32([A-Za-z]{2})_[0-9]$"
-    index_questions_mos2 = [
-        i for i, s in enumerate(header) if re.match(mos2_pattern, s)
-    ]
-
+def evaluate(rows, export_file_header: str):
     # 前半と後半をそれぞれnumpy配列にする
     # ["自然さ", "音楽性", "創造性"],
     # ["自然さ", "音楽性", "楽曲区間の境目", "楽曲区間内の統一感"],
@@ -123,5 +103,41 @@ if __name__ == "__main__":
     }
     # grouped_values1[key]: (回答数, 質問数, 項目)  今回は質問数は全部4
 
-    graph(grouped_values1, "mos1.png", "mos1")
-    graph(grouped_values2, "mos2.png", "mos2")
+    graph(grouped_values1, f"{export_file_header}_mos1.png", "mos1")
+    graph(grouped_values2, f"{export_file_header}_mos2.png", "mos2")
+
+
+if __name__ == "__main__":
+    header = []
+    rows = []
+    with open(FILENAME) as f:
+        reader = csv.reader(f)
+        for i, row in enumerate(reader):
+            if (i + 1) in IGNORE_ROWS:
+                continue
+            elif i == 0:
+                header = row
+            else:
+                rows.append(row)
+    mos1_pattern = r"^([A-Za-z]{2})_[0-9]$"
+    index_questions_mos1 = [
+        i for i, s in enumerate(header) if re.match(mos1_pattern, s)
+    ]
+    mos2_pattern = r"^32([A-Za-z]{2})_[0-9]$"
+    index_questions_mos2 = [
+        i for i, s in enumerate(header) if re.match(mos2_pattern, s)
+    ]
+
+    evaluate(rows, f"all_{len(rows)}")
+
+    rows_music_experienced = []
+    rows_music_inexperienced = []
+    for row in rows:
+        if row[4] == "0" or row[5] == "0" or row[6] == "0":
+            rows_music_experienced.append(row)
+        else:
+            rows_music_inexperienced.append(row)
+    evaluate(rows_music_experienced, f"music_experienced{len(rows_music_experienced)}")
+    evaluate(
+        rows_music_inexperienced, f"music_inexperienced{len(rows_music_inexperienced)}"
+    )
