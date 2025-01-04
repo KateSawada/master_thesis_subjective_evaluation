@@ -5,6 +5,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import font_manager, rcParams
+from scipy import stats
 
 FILENAME = "results.csv"
 IGNORE_ROWS = [2, 3, 4, 5, 6]  # テスト時のデータが2-6行目に入っているため除外
@@ -62,9 +63,32 @@ def graph(grouped_values, filename, type_="mos1"):
 
     # グラフの表示
     plt.savefig(filename)
+    plt.close("all")
+
+
+def welch_t_test(a: np.ndarray, b: np.ndarray):
+    A_var = np.var(a, ddof=1)  # Aの不偏分散
+    B_var = np.var(b, ddof=1)  # Bの不偏分散
+    A_df = len(a) - 1  # Aの自由度
+    B_df = len(b) - 1  # Bの自由度
+    f = A_var / B_var  # F比の値
+    one_sided_pval1 = stats.f.cdf(f, A_df, B_df)  # 片側検定のp値 1
+    one_sided_pval2 = stats.f.sf(f, A_df, B_df)  # 片側検定のp値 2
+    two_sided_pval = min(one_sided_pval1, one_sided_pval2) * 2  # 両側検定のp値
+
+    # print(
+    #     f"F:       {round(f, 3)}",
+    # )
+    # print(
+    #     f"p-value: {round(two_sided_pval, 4)}, 等分散性: {'あり' if two_sided_pval > 0.05 else 'なし'} (p: 0.05)"
+    # )
+    print(
+        f"{'有意差あり' if stats.ttest_ind(a, b, equal_var=False).pvalue < 0.05 else '有意差なし'}"
+    )
 
 
 def evaluate(rows, export_file_header: str):
+    print(export_file_header)
     # 前半と後半をそれぞれnumpy配列にする
     # ["自然さ", "音楽性", "創造性"],
     # ["自然さ", "音楽性", "楽曲区間の境目", "楽曲区間内の統一感"],
@@ -105,6 +129,34 @@ def evaluate(rows, export_file_header: str):
 
     graph(grouped_values1, f"{export_file_header}_mos1.png", "mos1")
     graph(grouped_values2, f"{export_file_header}_mos2.png", "mos2")
+
+    # t検定
+    print("== mos1 ==")
+    print("* proposed vs polyffusion")
+    for i in range(grouped_values1["pr"].shape[-1]):
+        print(f'** {QUESTION_NAMES["mos1"][i]}')
+        welch_t_test(
+            grouped_values1["pr"][:, :, i].reshape(-1),
+            grouped_values1["po"][:, :, i].reshape(-1),
+        )
+    print("* proposed vs GT")
+    for i in range(grouped_values1["pr"].shape[-1]):
+        print(f'** {QUESTION_NAMES["mos1"][i]}')
+        welch_t_test(
+            grouped_values1["pr"][:, :, i].reshape(-1),
+            grouped_values1["hu"][:, :, i].reshape(-1),
+        )
+
+    print()
+
+    print("== mos2 ==")
+    for i in range(grouped_values2["pr"].shape[-1]):
+        print(f'** {QUESTION_NAMES["mos2"][i]}')
+        welch_t_test(
+            grouped_values2["pr"][:, :, i].reshape(-1),
+            grouped_values2["hu"][:, :, i].reshape(-1),
+        )
+    print()
 
 
 if __name__ == "__main__":
