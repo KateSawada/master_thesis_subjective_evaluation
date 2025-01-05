@@ -32,11 +32,57 @@ def graph(grouped_values, filename, type_="mos1"):
     means = np.zeros((num_items, num_keys))
     stds = np.zeros((num_items, num_keys))
 
+    confidence = 0.95  # 95%信頼区間
+    confidence_intervals_upper = np.zeros((num_items, num_keys))
+    confidence_intervals_lower = np.zeros((num_items, num_keys))
+
     for i in range(num_items):
         for j, key in enumerate(grouped_values):
             # 各keyのデータから、項目iに対応するデータを取り出し、平均と標準偏差を計算
             means[i, j] = np.mean(grouped_values[key][:, :, i])  # 項目iの平均
             stds[i, j] = np.std(grouped_values[key][:, :, i])  # 項目iの標準偏差
+            sem = stats.sem(grouped_values[key][:, :, i].reshape(-1))  # 標準誤差
+            confidence_intervals_lower[i, j], confidence_intervals_upper[i, j] = (
+                stats.t.interval(
+                    confidence,
+                    len(grouped_values[key][:, :, i].reshape(-1)) - 1,
+                    loc=means[i, j],
+                    scale=sem,
+                )
+            )
+            # print(
+            #     f"  {confidence_intervals_upper[i, j]}, {confidence_intervals_lower[i, j]}"
+            # )
+            # print(f"  {means[i, j]}")
+            # print(
+            #     f"  {(confidence_intervals_lower[i, j] + confidence_intervals_upper[i, j]) / 2}"
+            # )
+            # print(sem)
+
+    # 回答の標準偏差の確認
+    tmp = dict()
+    for k in grouped_values.keys():
+        tmp[k] = np.std(grouped_values[k], axis=0)
+    tmp_max = []
+    tmp_min = []
+    fig, axes = plt.subplots(2, 2, figsize=(10, 6))
+    for i, (key, std) in enumerate(tmp.items()):
+        ax = axes[i // 2, i % 2]
+        for j in range(std.shape[-1]):
+            ax.scatter(
+                std[:, j],
+                np.ones_like(std[:, j]) * j,
+                label=QUESTION_NAMES[type_][j],
+            )
+        ax.set_title(SYSTEM_NAMES[key])
+        tmp_max.append(np.max(std[:, j]))
+        tmp_min.append(np.min(std[:, j]))
+        ax.legend()
+    for ax in axes.flatten():
+        ax.set_xlim(min(tmp_min) * 0.95, max(tmp_max) * 1.05)
+    fig.suptitle(f"{type_} std min={min(tmp_min):.3f}, max={max(tmp_max):.3f}")
+    plt.savefig(f"{filename}_std.png")
+    plt.close("all")
 
     # グラフの描画
     x = np.arange(num_keys)  # X軸位置: keysの数だけ
@@ -49,7 +95,7 @@ def graph(grouped_values, filename, type_="mos1"):
             x + i * width,
             means[i, :],
             width,
-            yerr=stds[i, :],
+            yerr=confidence_intervals_upper[i, :] - means[i, :],  # 95%信頼区間
             capsize=5,
             label=QUESTION_NAMES[type_][i],
         )
