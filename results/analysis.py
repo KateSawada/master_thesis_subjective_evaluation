@@ -111,7 +111,11 @@ def graph(grouped_values, filename, type_="mos1"):
     ax.legend(fontsize=FONT_SIZE)
 
     # グラフの表示
-    plt.savefig(filename)
+    # dpi = 100  # 図の解像度
+    # pixel_padding = 5  # ピクセル単位の余白
+    # inch_padding = pixel_padding / dpi  # ピクセルをインチに変換
+    fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    plt.savefig(filename, bbox_inches="tight", pad_inches=0.05)
     plt.close("all")
 
 
