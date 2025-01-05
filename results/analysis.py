@@ -86,28 +86,26 @@ def graph(grouped_values, filename, type_="mos1"):
     plt.close("all")
 
     # グラフの描画
-    x = np.arange(num_keys)  # X軸位置: keysの数だけ
+    x = np.arange(num_items)  # X軸位置: keysの数だけ
     fig, ax = plt.subplots(figsize=(10, 4))
 
     # 項目ごとに棒グラフを描画
-    width = 0.2  # バーの幅
-    for i in range(num_items):
+    width = 1 / (num_keys + 1)  # バーの幅
+    for i in range(num_keys):
         ax.bar(
-            x + i * width,
-            means[i, :],
+            x + i * width - (num_keys - 1) / (num_keys * 2 + 2),  # 1/6 , 2/8 3/10
+            means[:, i],
             width,
-            yerr=confidence_intervals_upper[i, :] - means[i, :],  # 95%信頼区間
+            yerr=confidence_intervals_upper[:, i] - means[:, i],  # 95%信頼区間
             capsize=5,
-            label=QUESTION_NAMES[type_][i],
+            label=SYSTEM_NAMES[list(grouped_values.keys())[i]],
         )
 
     # ラベルとタイトルを設定
     ax.tick_params(labelsize=FONT_SIZE)
     ax.set_yticks([i for i in range(0, 6)])
-    ax.set_xticks(x + width * (num_items - 1) / 2)
-    ax.set_xticklabels(
-        [SYSTEM_NAMES[key] for key in grouped_values.keys()], fontsize=FONT_SIZE
-    )  # keys（AB, CD, EFなど）
+    ax.set_xticks(x)
+    ax.set_xticklabels(QUESTION_NAMES[type_], fontsize=FONT_SIZE)
     ax.legend(fontsize=FONT_SIZE)
 
     # グラフの表示
