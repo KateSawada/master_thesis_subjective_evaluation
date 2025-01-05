@@ -208,6 +208,26 @@ def evaluate(rows, export_file_header: str):
     print()
 
 
+def combine_and_save(fig1_path, fig2_path, output_path):
+    # 2つの保存済みの画像を横並びにして保存
+    fig, axes = plt.subplots(1, 2, figsize=(18, 6))
+    fig.tight_layout()
+
+    # 画像を読み込んで各Axesに表示
+    img1 = plt.imread(fig1_path)
+    img2 = plt.imread(fig2_path)
+    axes[0].imshow(img1)
+    axes[0].axis("off")  # 軸を非表示
+    axes[0].set_title("8 bars gen", fontsize=int(FONT_SIZE) * 1.2)
+    axes[1].imshow(img2)
+    axes[1].axis("off")  # 軸を非表示
+    axes[1].set_title("32 bars gen", fontsize=int(FONT_SIZE) * 1.2)
+
+    # 横並びの画像を保存
+    plt.savefig(output_path, bbox_inches="tight", pad_inches=0)
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     header = []
     rows = []
@@ -229,7 +249,9 @@ if __name__ == "__main__":
         i for i, s in enumerate(header) if re.match(mos2_pattern, s)
     ]
 
-    evaluate(rows, f"all_{len(rows)}")
+    name = f"all_{len(rows)}"
+    evaluate(rows, name)
+    combine_and_save(f"{name}_mos1.png", f"{name}_mos2.png", f"{name}.png")
 
     rows_music_experienced = []
     rows_music_inexperienced = []
@@ -238,7 +260,9 @@ if __name__ == "__main__":
             rows_music_experienced.append(row)
         else:
             rows_music_inexperienced.append(row)
-    evaluate(rows_music_experienced, f"music_experienced{len(rows_music_experienced)}")
-    evaluate(
-        rows_music_inexperienced, f"music_inexperienced{len(rows_music_inexperienced)}"
-    )
+    name = f"music_experienced{len(rows_music_experienced)}"
+    evaluate(rows_music_experienced, name)
+    combine_and_save(f"{name}_mos1.png", f"{name}_mos2.png", f"{name}.png")
+    name = f"music_inexperienced{len(rows_music_inexperienced)}"
+    evaluate(rows_music_inexperienced, name)
+    combine_and_save(f"{name}_mos1.png", f"{name}_mos2.png", f"{name}.png")
