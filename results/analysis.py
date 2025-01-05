@@ -87,7 +87,7 @@ def graph(grouped_values, filename, type_="mos1"):
 
     # グラフの描画
     x = np.arange(num_keys)  # X軸位置: keysの数だけ
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(10, 4))
 
     # 項目ごとに棒グラフを描画
     width = 0.2  # バーの幅
