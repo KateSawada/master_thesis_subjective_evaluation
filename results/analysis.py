@@ -93,7 +93,7 @@ def graph(grouped_values, filename, type_="mos1"):
     width = 1 / (num_keys + 1)  # バーの幅
     for i in range(num_keys):
         ax.bar(
-            x + i * width - (num_keys - 1) / (num_keys * 2 + 2),  # 1/6 , 2/8 3/10
+            x + i * width - (num_keys - 1) / (num_keys * 2 + 2),
             means[:, i],
             width,
             yerr=confidence_intervals_upper[:, i] - means[:, i],  # 95%信頼区間
