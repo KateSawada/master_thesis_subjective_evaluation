@@ -21,6 +21,7 @@ QUESTION_NAMES = {
     "mos1": ["Naturalness", "Musicality", " Creativity"],
     "mos2": ["Naturalness", "Musicality", "Boundary Clarity", "Phase Similarity"],
 }
+FONT_SIZE = 16
 
 
 def graph(grouped_values, filename, type_="mos1"):
@@ -74,10 +75,10 @@ def graph(grouped_values, filename, type_="mos1"):
                 np.ones_like(std[:, j]) * j,
                 label=QUESTION_NAMES[type_][j],
             )
-        ax.set_title(SYSTEM_NAMES[key])
+        ax.set_title(SYSTEM_NAMES[key], fontsize=FONT_SIZE)
         tmp_max.append(np.max(std[:, j]))
         tmp_min.append(np.min(std[:, j]))
-        ax.legend()
+        ax.legend(fontsize=FONT_SIZE)
     for ax in axes.flatten():
         ax.set_xlim(min(tmp_min) * 0.95, max(tmp_max) * 1.05)
     fig.suptitle(f"{type_} std min={min(tmp_min):.3f}, max={max(tmp_max):.3f}")
@@ -101,11 +102,13 @@ def graph(grouped_values, filename, type_="mos1"):
         )
 
     # ラベルとタイトルを設定
+    ax.tick_params(labelsize=FONT_SIZE)
+    ax.set_yticks([i for i in range(0, 6)])
     ax.set_xticks(x + width * (num_items - 1) / 2)
     ax.set_xticklabels(
-        SYSTEM_NAMES[key] for key in grouped_values.keys()
+        [SYSTEM_NAMES[key] for key in grouped_values.keys()], fontsize=FONT_SIZE
     )  # keys（AB, CD, EFなど）
-    ax.legend()
+    ax.legend(fontsize=FONT_SIZE)
 
     # グラフの表示
     plt.savefig(filename)
