@@ -17,6 +17,8 @@ SYSTEM_NAMES = {
     "hu": "GT",
 }
 
+SYSTEM_COLORS = {"ba": "#FF8437", "pr": "#9DE16F", "po": "#53AFFE", "hu": "#DE70FF"}
+
 QUESTION_NAMES = {
     "mos1": ["Naturalness", "Musicality", " Creativity"],
     "mos2": ["Naturalness", "Musicality", "Boundary Clarity", "Phase Similarity"],
@@ -99,6 +101,7 @@ def graph(grouped_values, filename, type_="mos1"):
             yerr=confidence_intervals_upper[:, i] - means[:, i],  # 95%信頼区間
             capsize=5,
             label=SYSTEM_NAMES[list(grouped_values.keys())[i]],
+            color=SYSTEM_COLORS[list(grouped_values.keys())[i]],
         )
 
     # ラベルとタイトルを設定
