@@ -21,9 +21,9 @@ SYSTEM_COLORS = {"ba": "#FF8437", "pr": "#9DE16F", "po": "#53AFFE", "hu": "#DE70
 
 QUESTION_NAMES = {
     "mos1": ["Naturalness", "Musicality", " Creativity"],
-    "mos2": ["Naturalness", "Musicality", "Boundary Clarity", "Phase Similarity"],
+    "mos2": ["Naturalness", "Musicality", "Boundary\nClarity", "Phase\nSimilarity"],
 }
-FONT_SIZE = 16
+FONT_SIZE = 23
 
 
 def graph(grouped_values, filename, type_="mos1"):
@@ -77,10 +77,10 @@ def graph(grouped_values, filename, type_="mos1"):
                 np.ones_like(std[:, j]) * j,
                 label=QUESTION_NAMES[type_][j],
             )
-        ax.set_title(SYSTEM_NAMES[key], fontsize=FONT_SIZE)
+        ax.set_title(SYSTEM_NAMES[key])
         tmp_max.append(np.max(std[:, j]))
         tmp_min.append(np.min(std[:, j]))
-        ax.legend(fontsize=FONT_SIZE)
+        ax.legend()
     for ax in axes.flatten():
         ax.set_xlim(min(tmp_min) * 0.95, max(tmp_max) * 1.05)
     fig.suptitle(f"{type_} std min={min(tmp_min):.3f}, max={max(tmp_max):.3f}")
